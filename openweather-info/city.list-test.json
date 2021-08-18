@@ -1,0 +1,24 @@
+{
+    "citylist": [   
+        {
+            "id": 833,
+            "name": "test-city",
+            "state": "",
+            "country": "IR",
+            "coord": {
+                "lon": 47.159401,
+                "lat": 34.330502
+            }
+        },
+        {
+            "id": 833,
+            "name": "test-city-2",
+            "state": "",
+            "country": "AQ",
+            "coord": {
+                "lon": 47.159401,
+                "lat": 34.330502
+            }
+        }
+    ]
+}
