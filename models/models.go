@@ -26,6 +26,7 @@ type CityList struct {
 
 //City provides struct for city location information
 type City struct {
+	ID    int    `json:"id"`
 	Name  string `json:"name"`
 	Coord struct {
 		Lat  float32 `json:"lat"`

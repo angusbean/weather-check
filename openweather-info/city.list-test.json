@@ -7,17 +7,17 @@
             "country": "IR",
             "coord": {
                 "lon": 47.159401,
-                "lat": 34.330502
+                "lat": 100.00
             }
         },
         {
-            "id": 833,
+            "id": 1000,
             "name": "test-city-2",
             "state": "",
             "country": "AQ",
             "coord": {
-                "lon": 47.159401,
-                "lat": 34.330502
+                "lon": 44.159401,
+                "lat": 50.00
             }
         }
     ]

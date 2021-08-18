@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"os"
+	"strconv"
 
 	"github.com/angusbean/weather-check/models"
 )
@@ -15,16 +17,26 @@ func main() {
 		fmt.Println("error, usage required:", os.Args[0], "Latitude Value", "Longitude Value")
 		os.Exit(1)
 	}
-	lat, long := os.Args[1], os.Args[2]
-	fmt.Println(lat, long)
-
-	// Open the city.list json file and handle erros
-	jsonFile, err := os.Open("openweather-info/city.list.json")
+	lat, err := strconv.ParseFloat(os.Args[1], 32)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	fmt.Println("Successfully opened the JSON file")
+
+	long, err := strconv.ParseFloat(os.Args[2], 32)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	fmt.Println(lat, long)
+
+	// Open the city.list json file and handle erros
+	jsonFile, err := os.Open("openweather-info/city.list-test.json")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	defer jsonFile.Close()
 
 	// Read opened jsonFile as a byte array
@@ -36,12 +48,22 @@ func main() {
 	// Unmarshal byteArray into cities struct
 	json.Unmarshal(byteValue, &citylist)
 
+	var closestCityID int
+	var latOffSet float64
 	// Interate through every city in list
 	for i := 0; i < len(citylist.CityList); i++ {
-		if citylist.CityList[i].Name == "Oxford" {
-			fmt.Println("Found Oxford")
+		if lat <= 0 && citylist.CityList[i].Coord.Lat <= 0 {
+			latOffSet = math.Abs(lat - float64(citylist.CityList[i].Coord.Lat))
+		} else if lat <= 0 && citylist.CityList[i].Coord.Lat > 0 {
+			latOffSet = math.Abs(lat - float64(citylist.CityList[i].Coord.Lat))
+		} else if lat > 0 && citylist.CityList[i].Coord.Lat <= 0 {
+			latOffSet = math.Abs(lat - float64(citylist.CityList[i].Coord.Lat))
+		} else {
+			latOffSet = math.Abs(lat - float64(citylist.CityList[i].Coord.Lat))
 		}
+		fmt.Println(latOffSet)
 	}
+	fmt.Println(closestCityID)
 
 	/*s
 	//Recall API Key from secrets
