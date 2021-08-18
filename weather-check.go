@@ -29,10 +29,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println(lat, long)
-
 	// Open the city.list json file and handle erros
-	jsonFile, err := os.Open("openweather-info/city.list-test.json")
+	jsonFile, err := os.Open("openweather-info/city.list.json")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -50,20 +48,27 @@ func main() {
 
 	var closestCityID int
 	var latOffSet float64
+	var longOffSet float64
+	var tmpTotalOffSet float64
+	var totalOffSet float64
+	totalOffSet = 10000000.00
+
 	// Interate through every city in list
 	for i := 0; i < len(citylist.CityList); i++ {
-		if lat <= 0 && citylist.CityList[i].Coord.Lat <= 0 {
-			latOffSet = math.Abs(lat - float64(citylist.CityList[i].Coord.Lat))
-		} else if lat <= 0 && citylist.CityList[i].Coord.Lat > 0 {
-			latOffSet = math.Abs(lat - float64(citylist.CityList[i].Coord.Lat))
-		} else if lat > 0 && citylist.CityList[i].Coord.Lat <= 0 {
-			latOffSet = math.Abs(lat - float64(citylist.CityList[i].Coord.Lat))
-		} else {
-			latOffSet = math.Abs(lat - float64(citylist.CityList[i].Coord.Lat))
+		latOffSet = math.Abs(lat - float64(citylist.CityList[i].Coord.Lat))
+		longOffSet = math.Abs(long - float64(citylist.CityList[i].Coord.Long))
+		tmpTotalOffSet = latOffSet + longOffSet
+		if tmpTotalOffSet < totalOffSet {
+			totalOffSet = tmpTotalOffSet
+			closestCityID = citylist.CityList[i].ID
 		}
-		fmt.Println(latOffSet)
 	}
-	fmt.Println(closestCityID)
+
+	for i := 0; i < len(citylist.CityList); i++ {
+		if closestCityID == citylist.CityList[i].ID {
+			fmt.Println(citylist.CityList[i].Name)
+		}
+	}
 
 	/*s
 	//Recall API Key from secrets
