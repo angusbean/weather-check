@@ -16,7 +16,7 @@ import (
 //LocateCity returns the closest City ID (based on OpenWeather file from lat and long provided)
 func LocateCity(lat float64, long float64) int {
 	// Open the city.list json file and handle erros
-	jsonFile, err := os.Open("openweather-info/city.list.json")
+	jsonFile, err := os.Open("weather-calc/openweather-info/city.list.json")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

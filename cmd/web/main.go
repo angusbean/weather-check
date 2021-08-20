@@ -37,7 +37,7 @@ func main() {
 }
 
 func run() error {
-	// change this to true when in production
+	//InProduction should change this to true when in production
 	app.InProduction = false
 
 	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
@@ -51,6 +51,3 @@ func run() error {
 
 	return nil
 }
-
-//weatherInfo = weathercalc.RetrieveWeather(weathercalc.LocateCity(lat, long))
-//fmt.Printf("API Response as struct %+v\n", weatherInfo)

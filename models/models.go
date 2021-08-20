@@ -41,7 +41,15 @@ type City struct {
 	} `json:"coord"`
 }
 
+//LatLong provides struct for Lat and Long values
 type LatLong struct {
 	Lat  float64 `json:"lat"`
 	Long float64 `json:"long"`
+}
+
+//ErrReponse provides struct for retrun JSON error message
+type ErrReponse struct {
+	Error       string
+	Description string
+	Code        int
 }
