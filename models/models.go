@@ -16,6 +16,11 @@ type Weather struct {
 		MinTemperature float32 `json:"temp_min"`
 		MaxTemperature float32 `json:"temp_max"`
 	} `json:"main"`
+	Wind struct {
+		Speed float32 `json:"speed"`
+		Deg   float32 `json:"deg"`
+		Gust  float32 `json:"gust"`
+	} `json:"wind"`
 	Code int `json:"cod"`
 }
 
