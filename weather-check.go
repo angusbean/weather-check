@@ -3,20 +3,21 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"math"
 	"net/http"
 	"os"
 	"strconv"
-	"time"
 
-	"github.com/angusbean/weather-check/helpers"
 	"github.com/angusbean/weather-check/models"
-	"github.com/angusbean/weather-check/secrets"
+	weathercalc "github.com/angusbean/weather-check/weather-calc"
 )
 
+const portNumber = ":3000"
+
+var weatherInfo models.Weather
+
 func main() {
-	startTime := time.Now()
+	toPrint := fmt.Sprintf("Staring application on port %s", portNumber)
+	fmt.Println(toPrint)
 
 	//Receive Args (Lat and Long) from command line
 	if len(os.Args) != 3 {
@@ -38,71 +39,21 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Open the city.list json file and handle erros
-	jsonFile, err := os.Open("openweather-info/city.list.json")
+	weatherInfo = weathercalc.RetrieveWeather(weathercalc.LocateCity(lat, long))
+	fmt.Printf("API Response as struct %+v\n", weatherInfo)
+
+	http.HandleFunc("/", jsonResponse)
+	http.ListenAndServe(":3000", nil)
+
+}
+
+func jsonResponse(w http.ResponseWriter, r *http.Request) {
+	js, err := json.Marshal(weatherInfo)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	defer jsonFile.Close()
-
-	//Read opened jsonFile as a byte array
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-
-	//Initialise City array
-	var citylist models.CityList
-
-	//Unmarshal byteArray into cities struct
-	json.Unmarshal(byteValue, &citylist)
-
-	//Create global values for city location calculation
-	var closestCityID int
-	var closestCityName, cloestCityCountry string
-	var latOffSet, longOffSet, tmpTotalOffSet, totalOffSet float64
-	totalOffSet = 10000000.00
-
-	//Interate through every city in list to determine which coords are closest
-	for i := 0; i < len(citylist.CityList); i++ {
-		latOffSet = math.Abs(lat - float64(citylist.CityList[i].Coord.Lat))
-		longOffSet = math.Abs(long - float64(citylist.CityList[i].Coord.Long))
-		tmpTotalOffSet = latOffSet + longOffSet
-		if tmpTotalOffSet < totalOffSet {
-			totalOffSet = tmpTotalOffSet
-			closestCityID = citylist.CityList[i].ID
-			closestCityName = citylist.CityList[i].Name
-			cloestCityCountry = citylist.CityList[i].Country
-		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	//Print out the city information and the time since calling the application
-	fmt.Println("Closest City:", closestCityName+",", cloestCityCountry, "ID:", closestCityID)
-	helpers.TimeTrack(startTime, "factorial")
-
-	//Recall API Key from secrets
-	APICall := "http://api.openweathermap.org/data/2.5/weather?id=" + strconv.Itoa(closestCityID) + "&appid=" + secrets.API_key
-
-	//Create client & request
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", APICall, nil)
-	if err != nil {
-		fmt.Print(err.Error())
-	}
-
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Content-Type", "application/json")
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Print(err.Error())
-	}
-
-	defer resp.Body.Close()
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Print(err.Error())
-	}
-
-	var responseObject models.Weather
-	json.Unmarshal(bodyBytes, &responseObject)
-	fmt.Printf("API Response as struct %+v\n", responseObject)
-	helpers.TimeTrack(startTime, "factorial")
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
 }
