@@ -39,3 +39,8 @@ type City struct {
 	} `json:"coord"`
 	Country string `json:"country"`
 }
+
+type LatLong struct {
+	Lat  float64 `json:"lat"`
+	Long float64 `json:"long"`
+}
