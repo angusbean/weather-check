@@ -11,7 +11,7 @@ import (
 func routes(app *config.AppConfig) http.Handler {
 	mux := chi.NewRouter()
 
-	mux.Post("/", handlers.Repo.PostLocation)
+	mux.Get("/", handlers.Repo.GetWeather)
 
 	return mux
 }

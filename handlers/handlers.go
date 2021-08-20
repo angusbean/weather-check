@@ -9,6 +9,7 @@ import (
 
 	"github.com/angusbean/weather-check/config"
 	"github.com/angusbean/weather-check/models"
+	weathercalc "github.com/angusbean/weather-check/weather-calc"
 )
 
 //Repo the repository used by the handlers
@@ -32,7 +33,7 @@ func NewHandlers(r *Repository) {
 }
 
 //PostLocation accepts JSON input and returns JSON weather information for that location
-func (m *Repository) PostLocation(w http.ResponseWriter, r *http.Request) {
+func (m *Repository) GetWeather(w http.ResponseWriter, r *http.Request) {
 	var location models.LatLong
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
@@ -51,14 +52,18 @@ func (m *Repository) PostLocation(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	fmt.Println(location)
+	fmt.Printf("Location as struct: %+v\n", location)
 
-	/*
-		out, err := json.MarshalIndent(resp, "", "     ")
-		if err != nil {
-			log.Println(err)
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(out)
-	*/
+	weather := weathercalc.RetrieveWeather(weathercalc.LocateCity(location.Lat, location.Long))
+
+	fmt.Println(weather)
+
+	jsonWeather, err := json.MarshalIndent(weather, "", "     ")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(jsonWeather))
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonWeather)
 }

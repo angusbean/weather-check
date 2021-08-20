@@ -3,7 +3,10 @@ package models
 //Weather provides important information about weather data
 type Weather struct {
 	LocationName string `json:"name"`
-	Coord        struct {
+	Sys          struct {
+		Country string `json:"country"`
+	} `json:"sys"`
+	Coord struct {
 		Lat  float32 `json:"lat"`
 		Long float32 `json:"lon"`
 	} `json:"coord"`
@@ -31,13 +34,11 @@ type CityList struct {
 
 //City provides struct for city location information
 type City struct {
-	ID    int    `json:"id"`
-	Name  string `json:"name"`
+	ID    int `json:"id"`
 	Coord struct {
 		Lat  float32 `json:"lat"`
 		Long float32 `json:"lon"`
 	} `json:"coord"`
-	Country string `json:"country"`
 }
 
 type LatLong struct {

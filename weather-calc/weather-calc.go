@@ -13,6 +13,7 @@ import (
 	"github.com/angusbean/weather-check/secrets"
 )
 
+//LocateCity returns the closest City ID (based on OpenWeather file from lat and long provided)
 func LocateCity(lat float64, long float64) int {
 	// Open the city.list json file and handle erros
 	jsonFile, err := os.Open("openweather-info/city.list.json")
@@ -50,6 +51,7 @@ func LocateCity(lat float64, long float64) int {
 	return closestCityID
 }
 
+//RetrieveWeather returns the weather information based on the city ID from OpenWeather
 func RetrieveWeather(closestCityID int) models.Weather {
 	//Recall API Key from secrets
 	APICall := "http://api.openweathermap.org/data/2.5/weather?id=" + strconv.Itoa(closestCityID) + "&appid=" + secrets.API_key
