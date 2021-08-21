@@ -33,7 +33,7 @@ func NewHandlers(r *Repository) {
 }
 
 //GetWeather accepts lat and long as JSON input and returns JSON weather information for closest city location
-func (m *Repository) GetWeather(w http.ResponseWriter, r *http.Request) {
+func (m *Repository) RequestWeather(w http.ResponseWriter, r *http.Request) {
 	var location models.LatLong
 
 	//Read json file into memory with limits on json file size
@@ -50,17 +50,18 @@ func (m *Repository) GetWeather(w http.ResponseWriter, r *http.Request) {
 	//Unmarshal json into location struct, checking for errors
 	if err := json.Unmarshal(body, &location); err != nil {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.WriteHeader(422)
+		//w.WriteHeader(422)
 		if err := json.NewEncoder(w).Encode(err); err != nil {
 			fmt.Println(err)
 		}
 	}
 
-	if location.Lat == 0 && location.Long == 0 {
+	//Check to see if values are valid lats and longs
+	if location.Lat < -90 || location.Lat > 90 || location.Long < -180 || location.Long > 180 {
 		var errReponse models.ErrReponse
 		errReponse.Error = "useage error"
-		errReponse.Description = "requires fields lat and long with float64 values"
-		errReponse.Code = 204
+		errReponse.Description = "requires valid latitude and longitude values"
+		errReponse.Code = 406
 
 		jsonErrReponse, err := json.Marshal(errReponse)
 		if err != nil {
@@ -69,6 +70,26 @@ func (m *Repository) GetWeather(w http.ResponseWriter, r *http.Request) {
 
 		//Set response headers and write JSON as reponse
 		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(406)
+		w.Write(jsonErrReponse)
+		return
+	}
+
+	//Check to see if coords were populated correctly
+	if location.Lat == 0 || location.Long == 0 {
+		var errReponse models.ErrReponse
+		errReponse.Error = "useage error"
+		errReponse.Description = "requires lat and long fields with float64 as values"
+		errReponse.Code = 400
+
+		jsonErrReponse, err := json.Marshal(errReponse)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		//Set response headers and write JSON as response
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(400)
 		w.Write(jsonErrReponse)
 		return
 	}
@@ -84,5 +105,6 @@ func (m *Repository) GetWeather(w http.ResponseWriter, r *http.Request) {
 
 	//Set response headers and write JSON as reponse
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
 	w.Write(jsonWeather)
 }

@@ -6,4 +6,6 @@ GO:
 
 
 Uses:
-- OpenWeatherAPI for weather information
+- [OpenWeatherAPI] for weather information (openweathermap.org)
+- [Chi] for router and middleware (github.com/go-chi/chi)
+- 

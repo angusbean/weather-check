@@ -15,7 +15,7 @@ func routes(app *config.AppConfig) http.Handler {
 	mux.Use(middleware.Recoverer)
 	mux.Use(middleware.Logger)
 
-	mux.Get("/", handlers.Repo.GetWeather)
+	mux.Post("/", handlers.Repo.RequestWeather)
 
 	return mux
 }
