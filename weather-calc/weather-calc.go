@@ -15,7 +15,7 @@ import (
 
 //LocateCity returns the closest City ID (based on OpenWeather file from lat and long provided)
 func LocateCity(lat float64, long float64) int {
-	// Open the city.list json file and handle erros
+	// Open the city.list.json file and handle erros
 	jsonFile, err := os.Open("weather-calc/openweather-info/city.list.json")
 	if err != nil {
 		fmt.Println(err)
@@ -63,19 +63,22 @@ func RetrieveWeather(closestCityID int) models.Weather {
 		fmt.Print(err.Error())
 	}
 
+	//Add Request Headers and send
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Print(err.Error())
 	}
-
 	defer resp.Body.Close()
+
+	//Read Response Body into Memory as bytes
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Print(err.Error())
 	}
 
+	//Unmarshal the bytes as json into the weather model
 	var weatherModel models.Weather
 	json.Unmarshal(bodyBytes, &weatherModel)
 
