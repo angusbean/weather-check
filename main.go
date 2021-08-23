@@ -9,6 +9,7 @@ import (
 	"github.com/angusbean/weather-check/config"
 	"github.com/angusbean/weather-check/handlers"
 	"github.com/angusbean/weather-check/models"
+	"github.com/angusbean/weather-check/routes"
 	weathercalc "github.com/angusbean/weather-check/weather-calc"
 )
 
@@ -30,7 +31,7 @@ func main() {
 
 	srv := &http.Server{
 		Addr:    portNumber,
-		Handler: routes(&app),
+		Handler: routes.Routes(&app),
 	}
 
 	err = srv.ListenAndServe()
@@ -43,7 +44,7 @@ func run() error {
 	//InProduction should change this to true when in production
 	app.InProduction = false
 
-	//infoLog prints to terminal (update to file in Production)
+	//infoLog prints to terminal (update in Production)
 	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	app.InfoLog = infoLog
 

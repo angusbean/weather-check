@@ -52,22 +52,16 @@ Performance:
 Roadmap:
 - Add authentication via JWT
 - Improve test coverage
-- Improve error handling
 
 ToDo:
-- Load the JSON file only once into memory, load on start up, then call the memorey file. as struct of cities. save in config file. Close 
 - run in main.go test doesnt run
-- Breakdown Weather model into submodel and combine into weather type, break out into differ files in models package in models
-- move main to root of package 
-- errors: cant find file - crash, bad data, just retrun error and continue
-- make sure no logic in handlers or routes
-- replace fmt prints of errors with log, currently not using logs
-- break out logic from handlers to separate files
+- get TestLoadCityList to work - file path issue
 
 - then authetication
 
 - then run it as docker, on cloud
-- 
+
+Other Ideas:
 look up what inormation google maps gives ? traffic as indicator of density? density - urban density?
 - look at map data
     - analyse elevation and undulating terrian

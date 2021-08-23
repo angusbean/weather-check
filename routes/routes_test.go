@@ -1,4 +1,4 @@
-package main
+package routes
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 func TestRoutes(t *testing.T) {
 	var app config.AppConfig
 
-	mux := routes(&app)
+	mux := Routes(&app)
 
 	switch v := mux.(type) {
 	case *chi.Mux:

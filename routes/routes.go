@@ -1,4 +1,4 @@
-package main
+package routes
 
 import (
 	"net/http"
@@ -9,7 +9,7 @@ import (
 	"github.com/go-chi/chi/middleware"
 )
 
-func routes(app *config.AppConfig) http.Handler {
+func Routes(app *config.AppConfig) http.Handler {
 	mux := chi.NewRouter()
 
 	//Use Chi middleware for Logging and Applcaiton recovery

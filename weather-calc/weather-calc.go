@@ -2,8 +2,8 @@ package weathercalc
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
+	"log"
 	"math"
 	"net/http"
 	"os"
@@ -18,8 +18,7 @@ func LoadCityList() models.CityList {
 	// Open the city.list.json file and handle erros
 	jsonFile, err := os.Open("weather-calc/openweather-info/city.list.json")
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 	defer jsonFile.Close()
 
@@ -63,7 +62,7 @@ func RetrieveWeather(closestCityID int) models.Weather {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", APICall, nil)
 	if err != nil {
-		fmt.Print(err.Error())
+		log.Print(err)
 	}
 
 	//Add Request Headers and send
@@ -71,14 +70,14 @@ func RetrieveWeather(closestCityID int) models.Weather {
 	req.Header.Add("Content-Type", "application/json")
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Print(err.Error())
+		log.Print(err)
 	}
 	defer resp.Body.Close()
 
 	//Read Response Body into Memory as bytes
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Print(err.Error())
+		log.Print(err)
 	}
 
 	//Unmarshal the bytes as json into the weather model

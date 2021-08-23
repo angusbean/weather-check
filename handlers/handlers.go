@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/angusbean/weather-check/config"
@@ -39,12 +39,12 @@ func (m *Repository) RequestWeather(w http.ResponseWriter, r *http.Request) {
 	//Read json file into memory with limits on json file size
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
-		fmt.Println(err)
+		log.Print(err)
 	}
 
 	//Check for errors in body of json file
 	if err := r.Body.Close(); err != nil {
-		fmt.Println(err)
+		log.Print(err)
 	}
 
 	//Unmarshal json into location struct, checking for errors
@@ -52,7 +52,7 @@ func (m *Repository) RequestWeather(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		//w.WriteHeader(422)
 		if err := json.NewEncoder(w).Encode(err); err != nil {
-			fmt.Println(err)
+			log.Print(err)
 		}
 	}
 
@@ -65,7 +65,7 @@ func (m *Repository) RequestWeather(w http.ResponseWriter, r *http.Request) {
 
 		jsonErrReponse, err := json.Marshal(errReponse)
 		if err != nil {
-			fmt.Println(err)
+			log.Print(err)
 		}
 
 		//Set response headers and write JSON as reponse
@@ -75,7 +75,7 @@ func (m *Repository) RequestWeather(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Check to see if coords were populated correctly
+	//Check to see if coords were populated correctly, 0 values check for non correct types
 	if location.Lat == 0 || location.Long == 0 {
 		var errReponse models.ErrReponse
 		errReponse.Error = "useage error"
@@ -84,7 +84,7 @@ func (m *Repository) RequestWeather(w http.ResponseWriter, r *http.Request) {
 
 		jsonErrReponse, err := json.Marshal(errReponse)
 		if err != nil {
-			fmt.Println(err)
+			log.Print(err)
 		}
 
 		//Set response headers and write JSON as response
@@ -94,13 +94,16 @@ func (m *Repository) RequestWeather(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//Using the lat and long provided return the closest city ID number (OpenWeatherMaps)
+	closestCityID := weathercalc.LocateCity(location.Lat, location.Long, m.App.CityList)
+
 	//Create weather object based on location
-	weather := weathercalc.RetrieveWeather(weathercalc.LocateCity(location.Lat, location.Long, m.App.CityList))
+	weather := weathercalc.RetrieveWeather(closestCityID)
 
 	//Marshal new weather object into JSON
 	jsonWeather, err := json.MarshalIndent(weather, "", "     ")
 	if err != nil {
-		fmt.Println(err)
+		log.Print(err)
 	}
 
 	//Set response headers and write JSON as reponse

@@ -4,6 +4,10 @@ import (
 	"testing"
 )
 
+func TestLoadCityList(t *testing.T) {
+	//TODO
+}
+
 var LocationTests = []struct {
 	name               string
 	lat                float64
