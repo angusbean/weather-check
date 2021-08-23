@@ -1,11 +1,17 @@
 package weathercalc
 
 import (
+	"log"
+	"os"
 	"testing"
 )
 
 func TestLoadCityList(t *testing.T) {
-	//TODO
+	jFile, err := os.Open("openweather-info/city.list.json")
+	if err != nil {
+		t.Error(err)
+	}
+	defer jFile.Close()
 }
 
 var LocationTests = []struct {
@@ -14,11 +20,17 @@ var LocationTests = []struct {
 	long               float64
 	expectedReturnedID int
 }{
-	{"sydney-test", -33.86, 151.29, 251},
+	{"Protaras", 35.012501, 34.058331, 18918},
+	{"Judaydah", 15.07512, 45.299622, 30616},
 }
 
 func TestLocateCity(t *testing.T) {
-	cityList := LoadCityList()
+	jFile, err := os.Open("openweather-info/city.list.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer jFile.Close()
+	cityList := LoadCityList(jFile)
 	for _, e := range LocationTests {
 		result := LocateCity(e.lat, e.long, cityList)
 		if result != e.expectedReturnedID {
@@ -33,7 +45,8 @@ var TheWeatherTests = []struct {
 	long               float64
 	expectedReturnedID int
 }{
-	{"sydney-test", -33.86, 151.29, 251},
+	{"Protaras", 35.012501, 34.058331, 18918},
+	{"Judaydah", 15.07512, 45.299622, 30616},
 }
 
 var RetrieveWeatherTests = []struct {

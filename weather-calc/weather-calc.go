@@ -14,13 +14,9 @@ import (
 )
 
 //LoadCityList loads the JSON city list into memory
-func LoadCityList() models.CityList {
+func LoadCityList(jFile *os.File) models.CityList {
 	// Open the city.list.json file and handle erros
-	jsonFile, err := os.Open("weather-calc/openweather-info/city.list.json")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer jsonFile.Close()
+	jsonFile := jFile
 
 	//Read opened jsonFile as a byte array
 	byteValue, _ := ioutil.ReadAll(jsonFile)

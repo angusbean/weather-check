@@ -51,18 +51,13 @@ Performance:
 
 Roadmap:
 - Add authentication via JWT
-- Improve test coverage
+- Run as Docker for cloud deploy
 
 ToDo:
-- run in main.go test doesnt run
-- get TestLoadCityList to work - file path issue
 
-- then authetication
-
-- then run it as docker, on cloud
 
 Other Ideas:
-look up what inormation google maps gives ? traffic as indicator of density? density - urban density?
+- look up what inormation google maps gives ? traffic as indicator of density? density - urban density?
 - look at map data
     - analyse elevation and undulating terrian
     - find api to indicate urban density, noise floor
@@ -70,4 +65,4 @@ look up what inormation google maps gives ? traffic as indicator of density? den
 - add boat information, 
 - add flight path id
 - add disaster alert, bush fires
--low alt aircraft 
+- low alt aircraft

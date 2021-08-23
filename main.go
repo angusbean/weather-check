@@ -53,7 +53,12 @@ func run() error {
 	app.ErrorLog = errorLog
 
 	//cityList loads the JSON file of city information into memory
-	cityList = weathercalc.LoadCityList()
+	jFile, err := os.Open("weather-calc/openweather-info/city.list.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer jFile.Close()
+	cityList = weathercalc.LoadCityList(jFile)
 	app.CityList = cityList
 
 	repo := handlers.NewRepo(&app)
