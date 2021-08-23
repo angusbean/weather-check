@@ -11,7 +11,7 @@ Uses:
 
 Usage Example:
 
-Sent at Post Request on Port 3000, 
+Sent at Post Request on Port 3000 as JSON, 
 {
 	"lat": -33.86,
 	"long": 151.20
@@ -54,3 +54,27 @@ Roadmap:
 - Improve test coverage
 - Improve error handling
 
+ToDo:
+- Load the JSON file only once into memory, load on start up, then call the memorey file. as struct of cities. save in config file. Close 
+- run in main.go test doesnt run
+- Breakdown Weather model into submodel and combine into weather type, break out into differ files in models package in models
+- move main to root of package 
+- errors: cant find file - crash, bad data, just retrun error and continue
+- make sure no logic in handlers or routes
+- replace fmt prints of errors with log, currently not using logs
+
+
+
+- then authetication
+
+- then run it as docker, on cloud
+- 
+look up what inormation google maps gives ? traffic as indicator of density? density - urban density?
+- look at map data
+    - analyse elevation and undulating terrian
+    - find api to indicate urban density, noise floor
+    - 
+- add boat information, 
+- add flight path id
+- add disaster alert, bush fires
+-low alt aircraft 
