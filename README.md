@@ -62,8 +62,7 @@ ToDo:
 - errors: cant find file - crash, bad data, just retrun error and continue
 - make sure no logic in handlers or routes
 - replace fmt prints of errors with log, currently not using logs
-
-
+- break out logic from handlers to separate files
 
 - then authetication
 

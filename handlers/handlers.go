@@ -95,7 +95,7 @@ func (m *Repository) RequestWeather(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Create weather object based on location
-	weather := weathercalc.RetrieveWeather(weathercalc.LocateCity(location.Lat, location.Long))
+	weather := weathercalc.RetrieveWeather(weathercalc.LocateCity(location.Lat, location.Long, m.App.CityList))
 
 	//Marshal new weather object into JSON
 	jsonWeather, err := json.MarshalIndent(weather, "", "     ")

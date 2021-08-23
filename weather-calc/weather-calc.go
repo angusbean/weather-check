@@ -13,8 +13,8 @@ import (
 	"github.com/angusbean/weather-check/secrets"
 )
 
-//LocateCity returns the closest City ID (based on OpenWeather file from lat and long provided)
-func LocateCity(lat float64, long float64) int {
+//LoadCityList loads the JSON city list into memory
+func LoadCityList() models.CityList {
 	// Open the city.list.json file and handle erros
 	jsonFile, err := os.Open("weather-calc/openweather-info/city.list.json")
 	if err != nil {
@@ -27,27 +27,30 @@ func LocateCity(lat float64, long float64) int {
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
 	//Initialise City array
-	var citylist models.CityList
+	var cityList models.CityList
 
 	//Unmarshal byteArray into cities struct
-	json.Unmarshal(byteValue, &citylist)
+	json.Unmarshal(byteValue, &cityList)
+	return cityList
+}
 
+//LocateCity returns the closest City ID (based on OpenWeather file from lat and long provided)
+func LocateCity(lat float64, long float64, cityList models.CityList) int {
 	//Create global values for city location calculation
 	var closestCityID int
 	var latOffSet, longOffSet, tmpTotalOffSet, totalOffSet float64
 	totalOffSet = 10000000.00
 
 	//Interate through every city in list to determine which coords are closest
-	for i := 0; i < len(citylist.CityList); i++ {
-		latOffSet = math.Abs(lat - float64(citylist.CityList[i].Coord.Lat))
-		longOffSet = math.Abs(long - float64(citylist.CityList[i].Coord.Long))
+	for i := 0; i < len(cityList.CityList); i++ {
+		latOffSet = math.Abs(lat - float64(cityList.CityList[i].Coord.Lat))
+		longOffSet = math.Abs(long - float64(cityList.CityList[i].Coord.Long))
 		tmpTotalOffSet = latOffSet + longOffSet
 		if tmpTotalOffSet < totalOffSet {
 			totalOffSet = tmpTotalOffSet
-			closestCityID = citylist.CityList[i].ID
+			closestCityID = cityList.CityList[i].ID
 		}
 	}
-
 	return closestCityID
 }
 

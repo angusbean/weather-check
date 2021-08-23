@@ -1,6 +1,8 @@
 package weathercalc
 
-import "testing"
+import (
+	"testing"
+)
 
 var LocationTests = []struct {
 	name               string
@@ -12,8 +14,9 @@ var LocationTests = []struct {
 }
 
 func TestLocateCity(t *testing.T) {
+	cityList := LoadCityList()
 	for _, e := range LocationTests {
-		result := LocateCity(e.lat, e.long)
+		result := LocateCity(e.lat, e.long, cityList)
 		if result != e.expectedReturnedID {
 			t.Errorf("Doesnt Match")
 		}
