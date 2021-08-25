@@ -1,7 +1,7 @@
 package models
 
 //Weather provides important information about weather data
-type Weather struct {
+type WeatherUpdate struct {
 	LocationName string `json:"name"`
 	Sys          struct {
 		Country string `json:"country"`
@@ -11,7 +11,7 @@ type Weather struct {
 		Long float32 `json:"lon"`
 	} `json:"coord"`
 	Weather []struct {
-		Weather     string `json:"main"`
+		Main        string `json:"main"`
 		Description string `json:"description"`
 	} `json:"weather"`
 	Temperature struct {

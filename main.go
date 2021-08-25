@@ -18,7 +18,7 @@ const portNumber = ":3000"
 var app config.AppConfig
 var infoLog *log.Logger
 var errorLog *log.Logger
-var cityList models.CityList
+var cityList models.Cities
 
 func main() {
 	err := run()
@@ -59,7 +59,7 @@ func run() error {
 	}
 	defer jFile.Close()
 	cityList = weathercalc.LoadCityList(jFile)
-	app.CityList = cityList
+	app.Cities = cityList
 
 	repo := handlers.NewRepo(&app)
 	handlers.NewHandlers(repo)

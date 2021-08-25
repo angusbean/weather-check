@@ -14,7 +14,7 @@ import (
 )
 
 //LoadCityList loads the JSON city list into memory
-func LoadCityList(jFile *os.File) models.CityList {
+func LoadCityList(jFile *os.File) models.Cities {
 	// Open the city.list.json file and handle erros
 	jsonFile := jFile
 
@@ -22,7 +22,7 @@ func LoadCityList(jFile *os.File) models.CityList {
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
 	//Initialise City array
-	var cityList models.CityList
+	var cityList models.Cities
 
 	//Unmarshal byteArray into cities struct
 	json.Unmarshal(byteValue, &cityList)
@@ -30,27 +30,27 @@ func LoadCityList(jFile *os.File) models.CityList {
 }
 
 //LocateCity returns the closest City ID (based on OpenWeather file from lat and long provided)
-func LocateCity(lat float64, long float64, cityList models.CityList) int {
+func LocateCity(lat float64, long float64, cityList models.Cities) int {
 	//Create global values for city location calculation
 	var closestCityID int
 	var latOffSet, longOffSet, tmpTotalOffSet, totalOffSet float64
 	totalOffSet = 10000000.00
 
 	//Interate through every city in list to determine which coords are closest
-	for i := 0; i < len(cityList.CityList); i++ {
-		latOffSet = math.Abs(lat - float64(cityList.CityList[i].Coord.Lat))
-		longOffSet = math.Abs(long - float64(cityList.CityList[i].Coord.Long))
+	for i := 0; i < len(cityList.Cities); i++ {
+		latOffSet = math.Abs(lat - float64(cityList.Cities[i].Coord.Lat))
+		longOffSet = math.Abs(long - float64(cityList.Cities[i].Coord.Long))
 		tmpTotalOffSet = latOffSet + longOffSet
 		if tmpTotalOffSet < totalOffSet {
 			totalOffSet = tmpTotalOffSet
-			closestCityID = cityList.CityList[i].ID
+			closestCityID = cityList.Cities[i].ID
 		}
 	}
 	return closestCityID
 }
 
 //RetrieveWeather returns the weather information based on the city ID from OpenWeather
-func RetrieveWeather(closestCityID int) models.Weather {
+func RetrieveWeather(closestCityID int) models.WeatherUpdate {
 	//Recall API Key from secrets
 	APICall := "http://api.openweathermap.org/data/2.5/weather?id=" + strconv.Itoa(closestCityID) + "&appid=" + secrets.API_key
 
@@ -77,7 +77,7 @@ func RetrieveWeather(closestCityID int) models.Weather {
 	}
 
 	//Unmarshal the bytes as json into the weather model
-	var weatherModel models.Weather
+	var weatherModel models.WeatherUpdate
 	json.Unmarshal(bodyBytes, &weatherModel)
 
 	return weatherModel

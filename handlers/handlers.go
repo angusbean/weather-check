@@ -95,7 +95,7 @@ func (m *Repository) RequestWeather(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Using the lat and long provided return the closest city ID number (OpenWeatherMaps)
-	closestCityID := weathercalc.LocateCity(location.Lat, location.Long, m.App.CityList)
+	closestCityID := weathercalc.LocateCity(location.Lat, location.Long, m.App.Cities)
 
 	//Create weather object based on location
 	weather := weathercalc.RetrieveWeather(closestCityID)

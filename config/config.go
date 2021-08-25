@@ -14,5 +14,5 @@ type AppConfig struct {
 	InfoLog       *log.Logger
 	ErrorLog      *log.Logger
 	InProduction  bool
-	CityList      models.CityList
+	Cities        models.Cities
 }
