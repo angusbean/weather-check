@@ -34,7 +34,7 @@ func NewHandlers(r *Repository) {
 
 //GetWeather accepts lat and long as JSON input and returns JSON weather information for closest city location
 func (m *Repository) RequestWeather(w http.ResponseWriter, r *http.Request) {
-	var location models.LatLong
+	var location models.Coord
 
 	//Read json file into memory with limits on json file size
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
