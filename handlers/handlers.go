@@ -7,8 +7,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/angusbean/weather-check/auth"
 	"github.com/angusbean/weather-check/config"
-	"github.com/angusbean/weather-check/helpers"
 	"github.com/angusbean/weather-check/models"
 	weathercalc "github.com/angusbean/weather-check/weather-calc"
 )
@@ -159,17 +159,34 @@ func (m *Repository) Login(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(401)
 		w.Write(jsonErrReponse)
 		return
-
 	}
 
-	token, err := helpers.CreateToken(user.ID)
+	ts, err := auth.CreateToken(user.ID)
 	if err != nil {
 		log.Print(err)
 		return
 	}
+
+	//store any errors with auth in redis
+	saveErr := auth.CreateAuth(user.ID, ts)
+	if saveErr != nil {
+		log.Print(saveErr)
+	}
+
+	tokens := map[string]string{
+		"access_token":  ts.AccessToken,
+		"refresh_token": ts.RefreshToken,
+	}
+
+	jsonTokens, err := json.Marshal(tokens)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
-	w.Write([]byte(token))
+	w.Write([]byte(jsonTokens))
 	return
 
 }

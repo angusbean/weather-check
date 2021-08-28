@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/angusbean/weather-check/models"
+	"github.com/go-redis/redis/v7"
 )
 
 //AppConfig holds the application config
@@ -15,5 +16,5 @@ type AppConfig struct {
 	ErrorLog      *log.Logger
 	InProduction  bool
 	Cities        models.Cities
-	EnvVar        models.EnvVar
+	RedisClient   redis.Client
 }
