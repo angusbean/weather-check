@@ -9,6 +9,9 @@ Uses:
 - [OpenWeatherMap] for weather information (openweathermap.org)
 - [Chi] for router and middleware (github.com/go-chi/chi)
 
+Requires:
+- Redis for as Key Value store
+
 Directions:
 1) Create an acount and generate a valid OpenWeatherMap API token
 2) Clone the repo
@@ -65,8 +68,11 @@ Performance:
 
 Roadmap:
 - Add authentication via JWT
+- Use db for authentication 
 - Run as Docker for cloud deploy
+- Add stream via gRPC
 
 Other Ideas:
 - add density indicators (traffic? 4G coverage? housing data?)
+- ArcGIS urban density calculators
 - add low altitude airspace information (flight paths? ADS-B information)

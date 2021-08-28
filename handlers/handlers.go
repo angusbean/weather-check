@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/angusbean/weather-check/config"
+	"github.com/angusbean/weather-check/helpers"
 	"github.com/angusbean/weather-check/models"
 	weathercalc "github.com/angusbean/weather-check/weather-calc"
 )
@@ -50,7 +51,6 @@ func (m *Repository) RequestWeather(w http.ResponseWriter, r *http.Request) {
 	//Unmarshal json into location struct, checking for errors
 	if err := json.Unmarshal(body, &location); err != nil {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		//w.WriteHeader(422)
 		if err := json.NewEncoder(w).Encode(err); err != nil {
 			log.Print(err)
 		}
@@ -110,4 +110,66 @@ func (m *Repository) RequestWeather(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 	w.Write(jsonWeather)
+}
+
+//Login validates JWT Token
+func (m *Repository) Login(w http.ResponseWriter, r *http.Request) {
+
+	var validUser = models.User{
+		ID:       1,
+		Username: "username",
+		Password: "password",
+	}
+
+	var user models.User
+
+	//Read json file into memory with limits on json file size
+	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	if err != nil {
+		log.Print(err)
+	}
+
+	//Check for errors in body of json file
+	if err := r.Body.Close(); err != nil {
+		log.Print(err)
+	}
+
+	//Unmarshal json into location struct, checking for errors
+	if err := json.Unmarshal(body, &user); err != nil {
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		if err := json.NewEncoder(w).Encode(err); err != nil {
+			log.Print(err)
+		}
+	}
+
+	//compare the user from the request, with the one defined:
+	if user.Username != validUser.Username || user.Password != validUser.Password {
+		var errReponse models.ErrReponse
+		errReponse.Error = "invalid user"
+		errReponse.Description = "incorrect username or password provided"
+		errReponse.Code = 401
+
+		jsonErrReponse, err := json.Marshal(errReponse)
+		if err != nil {
+			log.Print(err)
+		}
+
+		//Set response headers and write JSON as reponse
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(401)
+		w.Write(jsonErrReponse)
+		return
+
+	}
+
+	token, err := helpers.CreateToken(user.ID)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	w.Write([]byte(token))
+	return
+
 }

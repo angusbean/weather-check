@@ -11,6 +11,7 @@ import (
 	"github.com/angusbean/weather-check/models"
 	"github.com/angusbean/weather-check/routes"
 	weathercalc "github.com/angusbean/weather-check/weather-calc"
+	"github.com/joho/godotenv"
 )
 
 const portNumber = ":3000"
@@ -60,6 +61,12 @@ func run() error {
 	defer jFile.Close()
 	cityList = weathercalc.LoadCityList(jFile)
 	app.Cities = cityList
+
+	//Set the applicaiton environment variables from .env file
+	err = godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
 	repo := handlers.NewRepo(&app)
 	handlers.NewHandlers(repo)
