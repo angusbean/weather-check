@@ -23,6 +23,21 @@ var errorLog *log.Logger
 var cityList models.Cities
 var redisClient *redis.Client
 
+func init() {
+	//Initializing redis
+	dsn := os.Getenv("REDIS_DSN")
+	if len(dsn) == 0 {
+		dsn = "localhost:6379"
+	}
+	redisClient = redis.NewClient(&redis.Options{
+		Addr: dsn, //redis port
+	})
+	_, err := redisClient.Ping().Result()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func main() {
 	err := run()
 	if err != nil {
@@ -30,7 +45,6 @@ func main() {
 	}
 
 	fmt.Println("application running on port :3000")
-	fmt.Println("application running")
 
 	srv := &http.Server{
 		Addr:    portNumber,
@@ -74,19 +88,4 @@ func run() error {
 	handlers.NewHandlers(repo)
 
 	return nil
-}
-
-func init() {
-	//Initializing redis
-	dsn := os.Getenv("REDIS_DSN")
-	if len(dsn) == 0 {
-		dsn = "localhost:6379"
-	}
-	redisClient = redis.NewClient(&redis.Options{
-		Addr: dsn, //redis port
-	})
-	_, err := redisClient.Ping().Result()
-	if err != nil {
-		log.Fatal(err)
-	}
 }
