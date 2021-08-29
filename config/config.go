@@ -7,7 +7,7 @@ import (
 	"github.com/angusbean/weather-check/models"
 )
 
-// AppConfig holds the application config
+//AppConfig holds the application config
 type AppConfig struct {
 	UseCache      bool
 	TemplateCache map[string]*template.Template

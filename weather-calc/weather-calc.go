@@ -10,7 +10,6 @@ import (
 	"strconv"
 
 	"github.com/angusbean/weather-check/models"
-	"github.com/angusbean/weather-check/secrets"
 )
 
 //LoadCityList loads the JSON city list into memory
@@ -51,8 +50,11 @@ func LocateCity(lat float64, long float64, cityList models.Cities) int {
 
 //RetrieveWeather returns the weather information based on the city ID from OpenWeather
 func RetrieveWeather(closestCityID int) models.WeatherUpdate {
-	//Recall API Key from secrets
-	APICall := "http://api.openweathermap.org/data/2.5/weather?id=" + strconv.Itoa(closestCityID) + "&appid=" + secrets.API_key
+	//Recall the API Key from OS Environment variables set in main run()
+	API_KEY := os.Getenv("API_KEY")
+
+	//Create API call
+	APICall := "http://api.openweathermap.org/data/2.5/weather?id=" + strconv.Itoa(closestCityID) + "&appid=" + API_KEY
 
 	//Create client & request
 	client := &http.Client{}

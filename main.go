@@ -11,6 +11,8 @@ import (
 	"github.com/angusbean/weather-check/models"
 	"github.com/angusbean/weather-check/routes"
 	weathercalc "github.com/angusbean/weather-check/weather-calc"
+	"github.com/go-redis/redis"
+	"github.com/joho/godotenv"
 )
 
 const portNumber = ":3000"
@@ -19,6 +21,7 @@ var app config.AppConfig
 var infoLog *log.Logger
 var errorLog *log.Logger
 var cityList models.Cities
+var client *redis.Client
 
 func main() {
 	err := run()
@@ -26,8 +29,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	toPrint := fmt.Sprintf("Starting application on port %s", portNumber)
-	fmt.Println(toPrint)
+	fmt.Println("application running on port :3000")
 
 	srv := &http.Server{
 		Addr:    portNumber,
@@ -61,8 +63,29 @@ func run() error {
 	cityList = weathercalc.LoadCityList(jFile)
 	app.Cities = cityList
 
+	//Set the applicaiton environment variables from .env file
+	err = godotenv.Load(".env")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	repo := handlers.NewRepo(&app)
 	handlers.NewHandlers(repo)
 
 	return nil
+}
+
+func init() {
+	//Initializing redis
+	dsn := os.Getenv("REDIS_DSN")
+	if len(dsn) == 0 {
+		dsn = "localhost:6379"
+	}
+	client = redis.NewClient(&redis.Options{
+		Addr: dsn, //redis port
+	})
+	_, err := client.Ping().Result()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
