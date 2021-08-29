@@ -33,86 +33,6 @@ func NewHandlers(r *Repository) {
 	Repo = r
 }
 
-//GetWeather accepts lat and long as JSON input and returns JSON weather information for closest city location
-func (m *Repository) RequestWeather(w http.ResponseWriter, r *http.Request) {
-
-	var location models.Coord
-
-	//Read json file into memory with limits on json file size
-	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
-	if err != nil {
-		log.Print(err)
-	}
-
-	//Check for errors in body of json file
-	if err := r.Body.Close(); err != nil {
-		log.Print(err)
-	}
-
-	//Unmarshal json into location struct, checking for errors
-	if err := json.Unmarshal(body, &location); err != nil {
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		if err := json.NewEncoder(w).Encode(err); err != nil {
-			log.Print(err)
-		}
-	}
-
-	//Check to see if values are valid lats and longs
-	if location.Lat < -90 || location.Lat > 90 || location.Long < -180 || location.Long > 180 {
-		var errReponse models.ErrReponse
-		errReponse.Error = "useage error"
-		errReponse.Description = "requires valid latitude and longitude values"
-		errReponse.Code = 406
-
-		jsonErrReponse, err := json.Marshal(errReponse)
-		if err != nil {
-			log.Print(err)
-		}
-
-		//Set response headers and write JSON as reponse
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(406)
-		w.Write(jsonErrReponse)
-		return
-	}
-
-	//Check to see if coords were populated correctly, 0 values check for non correct types
-	if location.Lat == 0 || location.Long == 0 {
-		var errReponse models.ErrReponse
-		errReponse.Error = "useage error"
-		errReponse.Description = "requires lat and long fields with float64 as values"
-		errReponse.Code = 400
-
-		jsonErrReponse, err := json.Marshal(errReponse)
-		if err != nil {
-			log.Print(err)
-		}
-
-		//Set response headers and write JSON as response
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(400)
-		w.Write(jsonErrReponse)
-		return
-	}
-
-	//Using the lat and long provided return the closest city ID number (OpenWeatherMaps)
-	closestCityID := weathercalc.LocateCity(location.Lat, location.Long, m.App.Cities)
-
-	//Create weather object based on location
-	weather := weathercalc.RetrieveWeather(closestCityID)
-
-	//Marshal new weather object into JSON
-	jsonWeather, err := json.MarshalIndent(weather, "", "     ")
-	if err != nil {
-		log.Print(err)
-	}
-
-	//Set response headers and write JSON as reponse
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-	w.Write(jsonWeather)
-}
-
 //Login validates JWT Token
 func (m *Repository) Login(w http.ResponseWriter, r *http.Request) {
 
@@ -190,4 +110,84 @@ func (m *Repository) Login(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(jsonTokens))
 	return
 
+}
+
+//RequestWeather accepts lat and long as JSON input and returns JSON weather information for closest city location
+func (m *Repository) RequestWeather(w http.ResponseWriter, r *http.Request) {
+
+	var location models.Coord
+
+	//Read json file into memory with limits on json file size
+	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	if err != nil {
+		log.Print(err)
+	}
+
+	//Check for errors in body of json file
+	if err := r.Body.Close(); err != nil {
+		log.Print(err)
+	}
+
+	//Unmarshal json into location struct, checking for errors
+	if err := json.Unmarshal(body, &location); err != nil {
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		if err := json.NewEncoder(w).Encode(err); err != nil {
+			log.Print(err)
+		}
+	}
+
+	//Check to see if values are valid lats and longs
+	if location.Lat < -90 || location.Lat > 90 || location.Long < -180 || location.Long > 180 {
+		var errReponse models.ErrReponse
+		errReponse.Error = "useage error"
+		errReponse.Description = "requires valid latitude and longitude values"
+		errReponse.Code = 406
+
+		jsonErrReponse, err := json.Marshal(errReponse)
+		if err != nil {
+			log.Print(err)
+		}
+
+		//Set response headers and write JSON as reponse
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(406)
+		w.Write(jsonErrReponse)
+		return
+	}
+
+	//Check to see if coords were populated correctly, 0 values check for non correct types
+	if location.Lat == 0 || location.Long == 0 {
+		var errReponse models.ErrReponse
+		errReponse.Error = "useage error"
+		errReponse.Description = "requires lat and long fields with float64 as values"
+		errReponse.Code = 400
+
+		jsonErrReponse, err := json.Marshal(errReponse)
+		if err != nil {
+			log.Print(err)
+		}
+
+		//Set response headers and write JSON as response
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(400)
+		w.Write(jsonErrReponse)
+		return
+	}
+
+	//Using the lat and long provided return the closest city ID number (OpenWeatherMaps)
+	closestCityID := weathercalc.LocateCity(location.Lat, location.Long, m.App.Cities)
+
+	//Create weather object based on location
+	weather := weathercalc.RetrieveWeather(closestCityID)
+
+	//Marshal new weather object into JSON
+	jsonWeather, err := json.MarshalIndent(weather, "", "     ")
+	if err != nil {
+		log.Print(err)
+	}
+
+	//Set response headers and write JSON as reponse
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	w.Write(jsonWeather)
 }
