@@ -15,9 +15,12 @@ import (
 //CreateToken returns token details assosicated with a unique user
 func CreateToken(userid uint64) (*models.TokenDetails, error) {
 	td := &models.TokenDetails{}
+
+	//set expiry of Access Token
 	td.AtExpires = time.Now().Add(time.Minute * 5).Unix()
 	td.AccessUuid = uuid.NewV4().String()
 
+	//set expiry of Refresh Token
 	td.RtExpires = time.Now().Add(time.Hour * 24 * 7).Unix()
 	td.RefreshUuid = uuid.NewV4().String()
 
