@@ -30,6 +30,7 @@ func main() {
 	}
 
 	fmt.Println("application running on port :3000")
+	fmt.Println("application running")
 
 	srv := &http.Server{
 		Addr:    portNumber,
