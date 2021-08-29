@@ -21,7 +21,7 @@ var app config.AppConfig
 var infoLog *log.Logger
 var errorLog *log.Logger
 var cityList models.Cities
-var client *redis.Client
+var redisClient *redis.Client
 
 func main() {
 	err := run()
@@ -81,10 +81,10 @@ func init() {
 	if len(dsn) == 0 {
 		dsn = "localhost:6379"
 	}
-	client = redis.NewClient(&redis.Options{
+	redisClient = redis.NewClient(&redis.Options{
 		Addr: dsn, //redis port
 	})
-	_, err := client.Ping().Result()
+	_, err := redisClient.Ping().Result()
 	if err != nil {
 		log.Fatal(err)
 	}
