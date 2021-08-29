@@ -15,8 +15,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-const portNumber = ":3000"
-
+var portNumber string
 var app config.AppConfig
 var infoLog *log.Logger
 var errorLog *log.Logger
@@ -24,9 +23,8 @@ var cityList models.Cities
 var redisClient *redis.Client
 
 func init() {
-	//Set the applicaiton environment variables from .env file
-	err := godotenv.Load(".env")
-	if err != nil {
+	//Set the app environment variables from .env file
+	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)
 	}
 
@@ -38,10 +36,19 @@ func init() {
 	redisClient = redis.NewClient(&redis.Options{
 		Addr: dsn, //redis port
 	})
-	_, err = redisClient.Ping().Result()
+	_, err := redisClient.Ping().Result()
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func NewRedisDB(host, port, password string) *redis.Client {
+	redisClient := redis.NewClient(&redis.Options{
+		Addr:     host + ":" + port,
+		Password: password,
+		DB:       0,
+	})
+	return redisClient
 }
 
 func main() {
@@ -50,7 +57,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("application running on port :3000")
+	portNumber = ":" + os.Getenv("PORT")
+	fmt.Printf("application running on port %s\n", portNumber)
 
 	srv := &http.Server{
 		Addr:    portNumber,
