@@ -19,6 +19,8 @@ func Routes(app *config.AppConfig) http.Handler {
 	//Post Requests
 	mux.Post("/login", handlers.Repo.Login)
 	mux.Post("/request-weather", handlers.Repo.RequestWeather)
+	mux.Post("/token/refresh", handlers.Repo.RefreshToken)
+	mux.Post("/logout", handlers.Repo.Logout)
 
 	return mux
 }

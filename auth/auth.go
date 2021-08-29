@@ -164,3 +164,22 @@ func FetchAuth(authD *models.AccessDetails) (uint64, error) {
 	userID, _ := strconv.ParseUint(userid, 10, 64)
 	return userID, nil
 }
+
+//DeleteAuth revokes the JWT metadata in the Redis store
+func DeleteAuth(givenUuid string) (int64, error) {
+	//Initializing redis
+	dsn := os.Getenv("REDIS_DSN")
+	client := redis.NewClient(&redis.Options{
+		Addr: dsn, //redis port
+	})
+	_, err := client.Ping().Result()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	deleted, err := client.Del(givenUuid).Result()
+	if err != nil {
+		return 0, err
+	}
+	return deleted, nil
+}

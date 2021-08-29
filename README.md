@@ -76,6 +76,9 @@ Roadmap:
 - Run as Docker for cloud deploy
 - Add stream via gRPC
 
+Minor ToDo's:
+- Create Redis client as application variable (remove duplication of code)
+
 Other Ideas:
 - add density indicators (traffic? 4G coverage? housing data?)
 - ArcGIS urban density calculators
