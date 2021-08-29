@@ -24,6 +24,12 @@ var cityList models.Cities
 var redisClient *redis.Client
 
 func init() {
+	//Set the applicaiton environment variables from .env file
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	//Initializing redis
 	dsn := os.Getenv("REDIS_DSN")
 	if len(dsn) == 0 {
@@ -32,7 +38,7 @@ func init() {
 	redisClient = redis.NewClient(&redis.Options{
 		Addr: dsn, //redis port
 	})
-	_, err := redisClient.Ping().Result()
+	_, err = redisClient.Ping().Result()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -77,12 +83,6 @@ func run() error {
 	defer jFile.Close()
 	cityList = weathercalc.LoadCityList(jFile)
 	app.Cities = cityList
-
-	//Set the applicaiton environment variables from .env file
-	err = godotenv.Load(".env")
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	repo := handlers.NewRepo(&app)
 	handlers.NewHandlers(repo)
