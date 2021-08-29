@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -182,4 +183,33 @@ func DeleteAuth(givenUuid string) (int64, error) {
 		return 0, err
 	}
 	return deleted, nil
+}
+
+//TokenAuthMiddleware validates JWT
+func TokenAuthMiddleware(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			err := TokenValid(r)
+			if err != nil {
+				var errReponse models.ErrReponse
+				errReponse.Error = "authorisation error"
+				errReponse.Description = err.Error()
+				errReponse.Code = 401
+
+				jsonErrReponse, err := json.Marshal(errReponse)
+				if err != nil {
+					log.Print(err)
+				}
+
+				//Set response headers and write JSON as response
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(401)
+				w.Write(jsonErrReponse)
+				return
+			}
+		}()
+
+		next.ServeHTTP(w, r)
+	}
+	return http.HandlerFunc(fn)
 }
