@@ -114,7 +114,6 @@ func (m *Repository) Login(w http.ResponseWriter, r *http.Request) {
 
 //RequestWeather accepts lat and long as JSON input and returns JSON weather information for closest city location
 func (m *Repository) RequestWeather(w http.ResponseWriter, r *http.Request) {
-
 	var location models.Coord
 
 	//Read json file into memory with limits on json file size
@@ -134,6 +133,26 @@ func (m *Repository) RequestWeather(w http.ResponseWriter, r *http.Request) {
 		if err := json.NewEncoder(w).Encode(err); err != nil {
 			log.Print(err)
 		}
+	}
+
+	//Validate the JWT token, returning JSON error if not valid
+	_, err = auth.ExtractTokenMetadata(r)
+	if err != nil {
+		var errReponse models.ErrReponse
+		errReponse.Error = "authorisation error"
+		errReponse.Description = err.Error()
+		errReponse.Code = 401
+
+		jsonErrReponse, err := json.Marshal(errReponse)
+		if err != nil {
+			log.Print(err)
+		}
+
+		//Set response headers and write JSON as response
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(401)
+		w.Write(jsonErrReponse)
+		return
 	}
 
 	//Check to see if values are valid lats and longs

@@ -72,6 +72,7 @@ Performance:
 Roadmap:
 - Add authentication via JWT
 - Use db for authentication 
+- Improve JSON error responses
 - Run as Docker for cloud deploy
 - Add stream via gRPC
 
